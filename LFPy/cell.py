@@ -653,17 +653,12 @@ class Cell(object):
                 if i == idx:
                     command = cmd1 + pptype + cmd2
                     stim = eval(command, locals(), globals())
-                    for param in list(kwargs.keys()):
-                        try:
-                            setattr(stim, param, kwargs[param])
-                        except SyntaxError:
-                            ERRMSG = ''.join([
-                                '',
-                                'Point process type "{0}" might not '.format(
-                                    pptype),
-                                'recognize attribute "{0}". '.format(param),
-                                'Check for misspellings'])
-                            raise Exception(ERRMSG)
+                    for key, value in kwargs.items():
+                        if np.iterable(value):
+                            for i, v in enumerate(value):
+                                getattr(stim, key)[i] = v
+                        else:
+                            setattr(stim, key, value)
                     self.stimlist.append(stim)
 
                     # record current
