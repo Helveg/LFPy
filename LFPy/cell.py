@@ -655,7 +655,7 @@ class Cell(object):
                     stim = eval(command, locals(), globals())
                     for key, value in kwargs.items():
                         try:
-                          itr = iter(value)
+                          itr = enumerate(iter(value))
                         except TypeError:
                             setattr(stim, key, value)
                         else:
