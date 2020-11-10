@@ -654,11 +654,13 @@ class Cell(object):
                     command = cmd1 + pptype + cmd2
                     stim = eval(command, locals(), globals())
                     for key, value in kwargs.items():
-                        if np.iterable(value):
-                            for i, v in enumerate(value):
-                                getattr(stim, key)[i] = v
-                        else:
+                        try:
+                          itr = iter(value)
+                        except TypeError:
                             setattr(stim, key, value)
+                        else:
+                            for i, v in itr:
+                                getattr(stim, key)[i] = v
                     self.stimlist.append(stim)
 
                     # record current
@@ -707,8 +709,8 @@ class Cell(object):
             self.somapos[2] = self.z[self.somaidx].mean()
         elif self.somaidx.size == 0:
             if self.verbose:
-                print('There is no soma!')
-                print('using first segment as root point')
+                warn("There is no soma!" +
+                     "Using first segment as root point")
             self.somaidx = np.array([0])
             self.somapos = np.zeros(3)
             self.somapos[0] = self.x[self.somaidx].mean()
